@@ -78,6 +78,7 @@ class EventTableFieldType extends BaseFieldType
 					'multiline' => Craft::t('Multi-line text'),
 					'number' => Craft::t('Number'),
 					'checkbox' => Craft::t('Checkbox'),
+					'datetime' => Craft::t('Date/Time'),
 				)
 			),
 		);
@@ -148,6 +149,8 @@ class EventTableFieldType extends BaseFieldType
 	 */
 	public function prepValueFromPost($value)
 	{
+		$this->_convertDateTimes($value);
+
 		if (is_array($value))
 		{
 			// Drop the string row keys
@@ -237,6 +240,8 @@ class EventTableFieldType extends BaseFieldType
 	 */
 	private function _getInputHtml($name, $value, $static)
 	{
+		$this->_convertDateTimes($value);
+
 		$columns = $this->getSettings()->columns;
 
 		if ($columns)
@@ -269,6 +274,35 @@ class EventTableFieldType extends BaseFieldType
 				'rows'   => $value,
 				'static' => $static
 			));
+		}
+	}
+
+	/**
+	* Loops through the data and converts the strings to DateTime objects.
+	*
+	* @param array &$value
+	*/
+	private function _convertDateTimes(&$value)
+	{
+		if (is_array($value) && ($columns = $this->getSettings()->columns))
+		{
+			foreach ($value as &$row)
+			{
+				foreach ($columns as $colId => $col)
+				{
+					if ($col['type'] == 'datetime')
+					{
+						if ((is_string($row[$colId]) && $row[$colId]) || (is_array($row[$colId]) && $row[$colId]['date']))
+						{
+							$row[$colId] = DateTime::createFromString($row[$colId]);
+						}
+						else
+						{
+							$row[$colId] = '';
+						}
+					}
+				}
+			}
 		}
 	}
 }

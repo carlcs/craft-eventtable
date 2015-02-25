@@ -2,14 +2,14 @@
 {%- set cols = (cols is defined ? cols : []) %}
 {%- set rows = (rows is defined ? rows : []) -%}
 
-<table id="{{ id }}" class="shadow-box editable">
+<table id="{{ id }}" class="data eventtable">
 	<thead>
 		<tr>
 			{% for col in cols %}
-				<th scope="col" class="header">{{ col.heading ? col.heading : ' ' }}</th>
+				<th scope="col">{{ col.heading ? col.heading : ' ' }}</th>
 			{% endfor %}
 			{% if not static %}
-				<th class="header" colspan="2"></th>
+				<th colspan="2"></th>
 			{% endif %}
 		</tr>
 	</thead>
@@ -18,22 +18,46 @@
 			<tr data-id="{{ rowId }}">
 				{% for colId, col in cols %}
 					{% set cellName = name~'['~rowId~']['~colId~']' %}
+					{% set cellId = name~'-'~rowId~'-'~colId %}
 					{% set value = (row[colId] is defined ? row[colId] : null) %}
 					{% set textual = (col.type in ['singleline','multiline','number']) %}
-					<td class="{% if textual %}textual{% endif %} {% if col.class is defined %}{{ col.class }}{% endif %}"{% if col.width is defined %} width="{{ col.width }}"{% endif %}>
+					{% set datetime = col.type == 'datetime' %}
+					<td class="{% if datetime %}datetime{% endif %} {% if textual %}textual{% endif %} {% if col.class is defined %}{{ col.class }}{% endif %}"{% if col.width is defined %} width="{{ col.width }}"{% endif %}>
 						{%- if col.type == 'select' -%}
-							{% include "_includes/forms/select" with {
+							{ include "_includes/forms/select" with {
 								class:    'small',
 								name:     cellName,
 								options:  col.options,
 								value:    value,
 								disabled: static
 							} only %}
+						{%- elseif col.type == 'datetime' -%}
+							<div class="datetimewrapper">
+								{% from "_includes/forms" import date, time %}
+								{{ date({
+									id:    cellId,
+									name:  cellName,
+									value: value
+								}) }}
+								{{ time({
+									id:    cellId,
+									name:  cellName,
+									value: value,
+									minuteIncrement: 30
+								}) }}
+							</div>
+						{%- elseif col.type == 'singleline' -%}
+							{% from "_includes/forms" import text %}
+							{{ text({
+								id:    cellId,
+								name:  cellName,
+								value: value
+							}) }}
 						{%- elseif col.type == 'checkbox' -%}
 							<input type="hidden" name="{{ cellName }}">
 							<input type="checkbox" name="{{ cellName }}" value="1"{% if value %} checked{% endif %}{% if static %} disabled{% endif %}>
 						{%- else -%}
-							<textarea name="{{ cellName }}" rows="1"{% if static %} disabled{% endif %}>{{ value }}</textarea>
+							<textarea class="text nicetext fullwidth" name="{{ cellName }}" rows="1"{% if static %} disabled{% endif %}>{{ value }}</textarea>
 						{%- endif -%}
 					</td>
 				{% endfor %}
@@ -49,13 +73,39 @@
 	<div class="btn add icon">{{ addRowLabel is defined ? addRowLabel : "Add a row"|t }}</div>
 {% endif %}
 
+{% set localeData = craft.i18n.getLocaleData() %}
+{% set settings = [] %}
+{% set settings = settings|merge({
+	datepicker: {
+		dateFormat: craft.i18n.datepickerJsFormat,
+		prevText: "Prev"|t,
+		nextText: "Next"|t,
+		firstDay: currentUser.weekStartDay
+	},
+	timepicker: {
+		timeFormat: craft.i18n.timepickerJsFormat,
+		orientation: localeData.getOrientation(),
+		step: 30,
+		lang: {
+			am: localeData.getAMName(),
+			AM: localeData.getAMName(),
+			pm: localeData.getPMName(),
+			PM: localeData.getPMName()
+		}
+	}
+}) %}
+
 {% if not static and (initJs is not defined or initJs) %}
 	{% set js %}
 		new Craft.EditableEventTable(
 			"{{ id   | namespaceInputId   | e('js') }}",
 			"{{ name | namespaceInputName | e('js') }}",
-			{{ cols|json_encode|raw }});
+			{{ cols|json_encode|raw }},
+			{{ settings|json_encode|raw }});
 	{% endset %}
 
 	{% includeJs js %}
 {% endif %}
+
+{% includeJsResource "eventtable/eventtable.js" %}
+{% includeCssResource "eventtable/eventtable.css" %}

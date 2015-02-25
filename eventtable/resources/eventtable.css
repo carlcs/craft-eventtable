@@ -1,0 +1,31 @@
+/*
+ * Table cells
+ *
+ * 1. All cells aligned to the top
+ * 2. Keep action buttons vertically centered
+ * 3. Work against space below textarea
+ *    http://stackoverflow.com/questions/7144843/extra-space-under-textarea-differs-along-browsers
+ * 4. Make time input fields to never wrap to the next line
+ */
+.eventtable td {
+  vertical-align: top; /* 1 */
+}
+.eventtable td.action {
+  vertical-align: middle; /* 2 */
+}
+.eventtable td textarea {
+  vertical-align: top; /* 3 */
+}
+.eventtable td.datetime {
+  width: 0.01% !important; /* 4 */
+}
+.eventtable .datetimewrapper {
+  white-space: nowrap; /* 4 */
+}
+
+/*
+ * Button
+ */
+.eventtable + .btn.add {
+  margin-top: 7px;
+}

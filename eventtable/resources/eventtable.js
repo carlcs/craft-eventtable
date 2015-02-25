@@ -24,7 +24,7 @@ Craft.EditableEventTable = Garnish.Base.extend(
 		this.$tbody = this.$table.children('tbody');
 
 		this.sorter = new Craft.DataTableSorter(this.$table, {
-			helperClass: 'editabletablesorthelper',
+			helperClass: 'datatablesorthelper',
 			copyDraggeeInputValuesToHelper: true
 		});
 
@@ -45,11 +45,30 @@ Craft.EditableEventTable = Garnish.Base.extend(
 			rowHtml = Craft.EditableEventTable.getRowHtml(rowId, this.columns, this.baseName, {}),
 			$tr = $(rowHtml).appendTo(this.$tbody);
 
+		var $dateinput = $tr.find('div[class^="datewrapper"]').children('input');
+		var $timeinput = $tr.find('div[class^="timewrapper"]').children('input');
+
+		$dateinput.datepicker({
+			constrainInput: false,
+			dateFormat: this.settings.datepicker.dateFormat,
+			prevText: this.settings.datepicker.prevText,
+			nextText: this.settings.datepicker.nextText,
+			firstDay: this.settings.datepicker.firstDay,
+		});
+
+		$timeinput.timepicker({
+			timeFormat: this.settings.timepicker.timeFormat,
+			closeOnWindowScroll: false,
+			orientation: this.settings.timepicker.orientation,
+			step: this.settings.timepicker.step,
+			lang: this.settings.timepicker.lang,
+		});
+
 		new Craft.EditableEventTable.Row(this, $tr);
 		this.sorter.addItems($tr);
 
-		// Focus the first input in the row
-		$tr.find('input,textarea,select').first().focus();
+		// Focus the first (textual) input in the row
+		$tr.find('.textual input, .textual textarea').first().focus();
 
 		// onAddRow callback
 		this.settings.onAddRow($tr);
@@ -71,10 +90,12 @@ Craft.EditableEventTable = Garnish.Base.extend(
 		{
 			var col = columns[colId],
 				name = baseName+'['+rowId+']['+colId+']',
+				id = baseName+'-'+rowId+'-'+colId,
 				value = (typeof values[colId] != 'undefined' ? values[colId] : ''),
-				textual = Craft.inArray(col.type, Craft.EditableEventTable.textualColTypes);
+				textual = Craft.inArray(col.type, Craft.EditableEventTable.textualColTypes),
+				datetime = (col.type == 'datetime');
 
-			rowHtml += '<td class="'+(textual ? 'textual' : '')+' '+(typeof col['class'] != 'undefined' ? col['class'] : '')+'"' +
+			rowHtml += '<td class="'+(datetime ? 'datetime' : '')+' '+(textual ? 'textual' : '')+' '+(typeof col['class'] != 'undefined' ? col['class'] : '')+'"' +
 			              (typeof col['width'] != 'undefined' ? ' width="'+col['width']+'"' : '') +
 			              '>';
 
@@ -131,9 +152,30 @@ Craft.EditableEventTable = Garnish.Base.extend(
 					break;
 				}
 
+				case 'datetime':
+				{
+					rowHtml += '<div class="datetimewrapper">';
+					rowHtml += '<div class="datewrapper">' +
+										 '<input class="text" type="text" id="'+id+'-date" size="10" name="'+name+'[date]" value="" autocomplete="off">' +
+										 '</div> ';
+					rowHtml += '<div class="timewrapper">' +
+							       '<input class="text" type="text" id="'+id+'-time" size="10" name="'+name+'[time]" value="" autocomplete="off">' +
+										 '</div>';
+					rowHtml += '</div>';
+
+					break;
+				}
+
+				case 'singleline':
+				{
+					rowHtml += '<input class="text nicetext fullwidth" type="text" name="'+name+'" value="'+value+'" autocomplete="off" placeholder="">'
+
+					break;
+				}
+
 				default:
 				{
-					rowHtml += '<textarea name="'+name+'" rows="1">'+value+'</textarea>';
+					rowHtml += '<textarea class="text nicetext fullwidth" name="'+name+'" rows="1">'+value+'</textarea>';
 				}
 			}
 
@@ -207,6 +249,16 @@ Craft.EditableEventTable.Row = Garnish.Base.extend(
 			}
 
 			i++;
+		}
+
+		// Adapt the background color from underlaying Matrix field, if there is one
+		var $closestPane = this.$tr.closest('div[class^="pane"]');
+		var $closestMatrix = this.$tr.closest('div[class^="matrixblock"]');
+		var $backgroundColor = $closestMatrix.length ? $closestMatrix.css('background-color') : $closestPane.css('background-color');
+
+		if (typeof($backgroundColor) != 'undefined')
+		{
+			this.$tr.css('background-color', $backgroundColor);
 		}
 
 		// Now that all of the text cells have been nice-ified, let's normalize the heights
