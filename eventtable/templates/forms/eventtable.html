@@ -51,7 +51,7 @@
 
 {% if not static and (initJs is not defined or initJs) %}
 	{% set js %}
-		new Craft.EditableTable(
+		new Craft.EditableEventTable(
 			"{{ id   | namespaceInputId   | e('js') }}",
 			"{{ name | namespaceInputName | e('js') }}",
 			{{ cols|json_encode|raw }});

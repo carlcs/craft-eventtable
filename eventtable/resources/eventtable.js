@@ -1,7 +1,7 @@
 /**
- * Editable table class
+ * Editable event table class
  */
-Craft.EditableTable = Garnish.Base.extend(
+Craft.EditableEventTable = Garnish.Base.extend(
 {
 	id: null,
 	baseName: null,
@@ -18,7 +18,7 @@ Craft.EditableTable = Garnish.Base.extend(
 		this.id = id;
 		this.baseName = baseName;
 		this.columns = columns;
-		this.setSettings(settings, Craft.EditableTable.defaults);
+		this.setSettings(settings, Craft.EditableEventTable.defaults);
 
 		this.$table = $('#'+id);
 		this.$tbody = this.$table.children('tbody');
@@ -32,7 +32,7 @@ Craft.EditableTable = Garnish.Base.extend(
 
 		for (var i = 0; i < $rows.length; i++)
 		{
-			new Craft.EditableTable.Row(this, $rows[i]);
+			new Craft.EditableEventTable.Row(this, $rows[i]);
 		}
 
 		this.$addRowBtn = this.$table.next('.add');
@@ -42,10 +42,10 @@ Craft.EditableTable = Garnish.Base.extend(
 	addRow: function()
 	{
 		var rowId = this.settings.rowIdPrefix+(this.biggestId+1),
-			rowHtml = Craft.EditableTable.getRowHtml(rowId, this.columns, this.baseName, {}),
+			rowHtml = Craft.EditableEventTable.getRowHtml(rowId, this.columns, this.baseName, {}),
 			$tr = $(rowHtml).appendTo(this.$tbody);
 
-		new Craft.EditableTable.Row(this, $tr);
+		new Craft.EditableEventTable.Row(this, $tr);
 		this.sorter.addItems($tr);
 
 		// Focus the first input in the row
@@ -72,7 +72,7 @@ Craft.EditableTable = Garnish.Base.extend(
 			var col = columns[colId],
 				name = baseName+'['+rowId+']['+colId+']',
 				value = (typeof values[colId] != 'undefined' ? values[colId] : ''),
-				textual = Craft.inArray(col.type, Craft.EditableTable.textualColTypes);
+				textual = Craft.inArray(col.type, Craft.EditableEventTable.textualColTypes);
 
 			rowHtml += '<td class="'+(textual ? 'textual' : '')+' '+(typeof col['class'] != 'undefined' ? col['class'] : '')+'"' +
 			              (typeof col['width'] != 'undefined' ? ' width="'+col['width']+'"' : '') +
@@ -151,7 +151,7 @@ Craft.EditableTable = Garnish.Base.extend(
 /**
  * Editable table row class
  */
-Craft.EditableTable.Row = Garnish.Base.extend(
+Craft.EditableEventTable.Row = Garnish.Base.extend(
 {
 	table: null,
 	id: null,
@@ -186,7 +186,7 @@ Craft.EditableTable.Row = Garnish.Base.extend(
 		{
 			var col = this.table.columns[colId];
 
-			if (Craft.inArray(col.type, Craft.EditableTable.textualColTypes))
+			if (Craft.inArray(col.type, Craft.EditableEventTable.textualColTypes))
 			{
 				$textarea = $('textarea', this.$tds[i]);
 				this.$textareas = this.$textareas.add($textarea);
@@ -276,7 +276,7 @@ Craft.EditableTable.Row = Garnish.Base.extend(
 
 		if (!ev.metaKey && !ev.ctrlKey && (
 			(keyCode == Garnish.RETURN_KEY) ||
-			(ev.data.type == 'number' && !Craft.inArray(keyCode, Craft.EditableTable.Row.numericKeyCodes))
+			(ev.data.type == 'number' && !Craft.inArray(keyCode, Craft.EditableEventTable.Row.numericKeyCodes))
 		))
 		{
 			ev.preventDefault();

@@ -2,32 +2,25 @@
 namespace Craft;
 
 /**
- * Class TableFieldType
- *
- * @author    Pixel & Tonic, Inc. <support@pixelandtonic.com>
- * @copyright Copyright (c) 2014, Pixel & Tonic, Inc.
- * @license   http://buildwithcraft.com/license Craft License Agreement
- * @see       http://buildwithcraft.com
- * @package   craft.app.fieldtypes
- * @since     1.0
+ * Class EventTableFieldType
  */
-class TableFieldType extends BaseFieldType
+class EventTableFieldType extends BaseFieldType
 {
 	// Public Methods
 	// =========================================================================
 
 	/**
-	 * @inheritDoc IComponentType::getName()
+	 * Returns the component's name.
 	 *
 	 * @return string
 	 */
 	public function getName()
 	{
-		return Craft::t('Table');
+		return Craft::t('Event Table');
 	}
 
 	/**
-	 * @inheritDoc IFieldType::defineContentAttribute()
+	 * Returns the field's content attribute config.
 	 *
 	 * @return mixed
 	 */
@@ -37,7 +30,7 @@ class TableFieldType extends BaseFieldType
 	}
 
 	/**
-	 * @inheritDoc ISavableComponentType::getSettingsHtml()
+	 * Returns the component's settings HTML.
 	 *
 	 * @return string|null
 	 */
@@ -127,11 +120,10 @@ class TableFieldType extends BaseFieldType
 	}
 
 	/**
-	 * @inheritDoc IFieldType::getInputHtml()
+	 * Returns the field's input HTML.
 	 *
 	 * @param string $name
 	 * @param mixed  $value
-	 *
 	 * @return string
 	 */
 	public function getInputHtml($name, $value)
@@ -149,10 +141,9 @@ class TableFieldType extends BaseFieldType
 	}
 
 	/**
-	 * @inheritDoc IFieldType::prepValueFromPost()
+	 * Returns the input value as it should be stored in the database.
 	 *
 	 * @param mixed $value
-	 *
 	 * @return mixed
 	 */
 	public function prepValueFromPost($value)
@@ -165,10 +156,9 @@ class TableFieldType extends BaseFieldType
 	}
 
 	/**
-	 * @inheritDoc IFieldType::prepValue()
+	 * Prepares the field's value for use.
 	 *
 	 * @param mixed $value
-	 *
 	 * @return mixed
 	 */
 	public function prepValue($value)
@@ -192,10 +182,9 @@ class TableFieldType extends BaseFieldType
 	}
 
 	/**
-	 * @inheritDoc BaseFieldType::getStaticHtml()
+	 * Returns static HTML for the field's value.
 	 *
 	 * @param mixed $value
-	 *
 	 * @return string
 	 */
 	public function getStaticHtml($value)
@@ -207,7 +196,7 @@ class TableFieldType extends BaseFieldType
 	// =========================================================================
 
 	/**
-	 * @inheritDoc BaseSavableComponentType::defineSettings()
+	 * Defines the settings.
 	 *
 	 * @return array
 	 */
@@ -220,10 +209,9 @@ class TableFieldType extends BaseFieldType
 	}
 
 	/**
-	 * @inheritDoc ISavableComponentType::prepSettings()
+	 * Preps the settings before they're saved to the database.
 	 *
 	 * @param array $settings
-	 *
 	 * @return array
 	 */
 	public function prepSettings($settings)
@@ -245,7 +233,6 @@ class TableFieldType extends BaseFieldType
 	 * @param string $name
 	 * @param mixed  $value
 	 * @param bool  $static
-	 *
 	 * @return string
 	 */
 	private function _getInputHtml($name, $value, $static)
@@ -275,7 +262,7 @@ class TableFieldType extends BaseFieldType
 
 			$id = craft()->templates->formatInputId($name);
 
-			return craft()->templates->render('_includes/forms/editableTable', array(
+			return craft()->templates->render('eventtable/forms/eventtable', array(
 				'id'     => $id,
 				'name'   => $name,
 				'cols'   => $columns,
