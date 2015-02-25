@@ -242,8 +242,6 @@ class EventTableFieldType extends BaseFieldType
 	 */
 	private function _getInputHtml($name, $value, $static)
 	{
-		// $this->_convertDateTimes($value);
-
 		$columns = $this->getSettings()->columns;
 
 		if ($columns)
