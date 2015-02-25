@@ -166,6 +166,8 @@ class EventTableFieldType extends BaseFieldType
 	 */
 	public function prepValue($value)
 	{
+		$this->_convertDateTimes($value);
+
 		if (is_array($value) && ($columns = $this->getSettings()->columns))
 		{
 			// Make the values accessible from both the col IDs and the handles
@@ -240,7 +242,7 @@ class EventTableFieldType extends BaseFieldType
 	 */
 	private function _getInputHtml($name, $value, $static)
 	{
-		$this->_convertDateTimes($value);
+		// $this->_convertDateTimes($value);
 
 		$columns = $this->getSettings()->columns;
 
