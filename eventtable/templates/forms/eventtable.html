@@ -21,7 +21,7 @@
 					{% set cellId = name~'-'~rowId~'-'~colId %}
 					{% set value = (row[colId] is defined ? row[colId] : null) %}
 					{% set textual = (col.type in ['singleline','multiline','number']) %}
-					{% set datetime = col.type == 'datetime' %}
+					{% set datetime = (col.type in ['datetime','date','time']) %}
 					<td class="{% if datetime %}datetime{% endif %} {% if textual %}textual{% endif %} {% if col.class is defined %}{{ col.class }}{% endif %}"{% if col.width is defined %} width="{{ col.width }}"{% endif %}>
 						{%- if col.type == 'select' -%}
 							{ include "_includes/forms/select" with {
@@ -31,20 +31,24 @@
 								value:    value,
 								disabled: static
 							} only %}
-						{%- elseif col.type == 'datetime' -%}
+						{%- elseif col.type in ['datetime','date','time'] -%}
 							<div class="datetimewrapper">
 								{% from "_includes/forms" import date, time %}
-								{{ date({
-									id:    cellId,
-									name:  cellName,
-									value: value
-								}) }}
-								{{ time({
-									id:    cellId,
-									name:  cellName,
-									value: value,
-									minuteIncrement: 30
-								}) }}
+								{% if col.type in ['datetime','date'] %}
+									{{ date({
+										id:    cellId,
+										name:  cellName,
+										value: value
+									}) }}
+								{% endif %}
+								{% if col.type in ['datetime','time'] %}
+									{{ time({
+										id:    cellId,
+										name:  cellName,
+										value: value,
+										minuteIncrement: 30
+									}) }}
+								{% endif %}
 							</div>
 						{%- elseif col.type == 'singleline' -%}
 							{% from "_includes/forms" import text %}
@@ -107,5 +111,6 @@
 	{% includeJs js %}
 {% endif %}
 
+{% includeJsResource 'lib/jquery.timepicker/jquery.timepicker'~(craft.config.useCompressedJs ? '.min' : '')~'.js' -%}
 {% includeJsResource "eventtable/eventtable.js" %}
 {% includeCssResource "eventtable/eventtable.css" %}

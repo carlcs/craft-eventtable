@@ -76,6 +76,7 @@ Craft.EditableEventTable = Garnish.Base.extend(
 },
 {
 	textualColTypes: ['singleline', 'multiline', 'number'],
+	datetimeColTypes: ['datetime', 'date', 'time'],
 	defaults: {
 		rowIdPrefix: '',
 		onAddRow: $.noop,
@@ -93,7 +94,7 @@ Craft.EditableEventTable = Garnish.Base.extend(
 				id = baseName+'-'+rowId+'-'+colId,
 				value = (typeof values[colId] != 'undefined' ? values[colId] : ''),
 				textual = Craft.inArray(col.type, Craft.EditableEventTable.textualColTypes),
-				datetime = (col.type == 'datetime');
+				datetime = Craft.inArray(col.type, Craft.EditableEventTable.datetimeColTypes);
 
 			rowHtml += '<td class="'+(datetime ? 'datetime' : '')+' '+(textual ? 'textual' : '')+' '+(typeof col['class'] != 'undefined' ? col['class'] : '')+'"' +
 			              (typeof col['width'] != 'undefined' ? ' width="'+col['width']+'"' : '') +
@@ -153,14 +154,22 @@ Craft.EditableEventTable = Garnish.Base.extend(
 				}
 
 				case 'datetime':
+				case 'date':
+				case 'time':
 				{
 					rowHtml += '<div class="datetimewrapper">';
-					rowHtml += '<div class="datewrapper">' +
-										 '<input class="text" type="text" id="'+id+'-date" size="10" name="'+name+'[date]" value="" autocomplete="off">' +
-										 '</div> ';
-					rowHtml += '<div class="timewrapper">' +
-							       '<input class="text" type="text" id="'+id+'-time" size="10" name="'+name+'[time]" value="" autocomplete="off">' +
-										 '</div>';
+					if (Craft.inArray(col.type, ['datetime', 'date']))
+					{
+						rowHtml += '<div class="datewrapper">' +
+											 '<input class="text" type="text" id="'+id+'-date" size="10" name="'+name+'[date]" value="" autocomplete="off">' +
+											 '</div> ';
+					}
+					if (Craft.inArray(col.type, ['datetime', 'time']))
+					{
+						rowHtml += '<div class="timewrapper">' +
+								       '<input class="text" type="text" id="'+id+'-time" size="10" name="'+name+'[time]" value="" autocomplete="off">' +
+											 '</div>';
+					}
 					rowHtml += '</div>';
 
 					break;
