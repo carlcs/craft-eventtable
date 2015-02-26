@@ -292,7 +292,7 @@ class EventTableFieldType extends BaseFieldType
 			{
 				foreach ($columns as $colId => $col)
 				{
-					if (in_array($col['type'], array('datetime', 'date', 'time')))
+					if ((array_key_exists($colId, $row)) && (in_array($col['type'], array('datetime', 'date', 'time'))))
 					{
 						if ((is_string($row[$colId]) && $row[$colId]) || (is_array($row[$colId]) && (isset($row[$colId]['date']) || isset($row[$colId]['time']))))
 						{
