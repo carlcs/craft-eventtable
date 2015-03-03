@@ -74,13 +74,14 @@ class EventTableFieldType extends BaseFieldType
 				'class' => 'thin',
 				'type' => 'select',
 				'options' => array(
+					'datetime' => Craft::t('Date/Time'),
+					'date' => Craft::t('Date'),
+					'time' => Craft::t('Time'),
 					'singleline' => Craft::t('Single-line Text'),
 					'multiline' => Craft::t('Multi-line text'),
 					'number' => Craft::t('Number'),
 					'checkbox' => Craft::t('Checkbox'),
-					'datetime' => Craft::t('Date/Time'),
-					'date' => Craft::t('Date'),
-					'time' => Craft::t('Time'),
+
 				)
 			),
 		);
