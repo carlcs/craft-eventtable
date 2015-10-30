@@ -152,7 +152,7 @@ class EventTableFieldType extends BaseFieldType
 	 */
 	public function prepValueFromPost($value)
 	{
-		$this->_convertDateTimes($value);
+		$this->_convertDateTimes($value, craft()->getTimeZone());
 
 		if (is_array($value))
 		{
@@ -285,7 +285,7 @@ class EventTableFieldType extends BaseFieldType
 	*
 	* @param array &$value
 	*/
-	private function _convertDateTimes(&$value)
+	private function _convertDateTimes(&$value, $timezone = null)
 	{
 		if (is_array($value) && ($columns = $this->getSettings()->columns))
 		{
@@ -297,7 +297,7 @@ class EventTableFieldType extends BaseFieldType
 					{
 						if ((is_string($row[$colId]) && $row[$colId]) || (is_array($row[$colId]) && (isset($row[$colId]['date']) || isset($row[$colId]['time']))))
 						{
-							$row[$colId] = DateTime::createFromString($row[$colId]);
+							$row[$colId] = DateTime::createFromString($row[$colId], $timezone);
 						}
 						else
 						{
